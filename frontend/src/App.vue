@@ -1,7 +1,6 @@
 <template>
-  <Register />
+  <router-view />
 </template>
 
 <script setup>
-import Register from './components/Register.vue'
 </script>

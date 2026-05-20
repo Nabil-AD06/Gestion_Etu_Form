@@ -1,19 +1,9 @@
 <template>
   <div class="container">
-    <div class="register-card">
-      <h2>Inscription</h2>
+    <div class="login-card">
+      <h2>Connexion</h2>
 
-      <form @submit.prevent="register">
-        <div class="input-group">
-          <label>Nom</label>
-          <input type="text" v-model="form.nom" placeholder="Entrez votre nom" />
-        </div>
-
-        <div class="input-group">
-          <label>Prénom</label>
-          <input type="text" v-model="form.prenom" placeholder="Entrez votre prénom" />
-        </div>
-
+      <form @submit.prevent="login">
         <div class="input-group">
           <label>Email</label>
           <input type="email" v-model="form.email" placeholder="Entrez votre email" />
@@ -24,10 +14,14 @@
           <input type="password" v-model="form.password" placeholder="Entrez votre mot de passe" />
         </div>
 
-        <button type="submit">S'inscrire</button>
+        <button type="submit">Se connecter</button>
 
         <p v-if="error" class="error">{{ error }}</p>
-        <p v-if="success" class="success">{{ success }}</p>
+
+        <p class="register-link">
+          Pas encore de compte ?
+          <a href="/" >S'inscrire</a>
+        </p>
       </form>
     </div>
   </div>
@@ -41,33 +35,34 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const form = ref({
-  nom: '',
-  prenom: '',
   email: '',
   password: ''
 })
 
 const error = ref('')
-const success = ref('')
 
-const register = async () => {
+const login = async () => {
   error.value = ''
   try {
-    const response = await api.post('/auth/register', {
-      nom: form.value.nom,
-      prenom: form.value.prenom,
+    const response = await api.post('/auth/login', {
       email: form.value.email,
       password: form.value.password
     })
 
+    // Sauvegarder le token et le rôle
     localStorage.setItem('token', response.data.data.token)
     localStorage.setItem('role', response.data.data.user.role)
 
-    success.value = 'Inscription réussie ! Redirection...'
-    setTimeout(() => router.push('/accueil'), 1500)
+    // Rediriger selon le rôle
+    const role = response.data.data.user.role
+    if (role === 'ADMIN') {
+      router.push('/admin')
+    } else {
+      router.push('/accueil')
+    }
 
   } catch (err) {
-    error.value = err.response?.data?.message || 'Erreur lors de l\'inscription'
+    error.value = err.response?.data?.message || 'Email ou mot de passe incorrect'
   }
 }
 </script>
@@ -81,7 +76,7 @@ const register = async () => {
   background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-.register-card {
+.login-card {
   background: white;
   padding: 30px;
   border-radius: 12px;
@@ -124,6 +119,7 @@ button {
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
+  margin-top: 5px;
 }
 
 button:hover {
@@ -136,9 +132,20 @@ button:hover {
   text-align: center;
 }
 
-.success {
-  color: green;
-  margin-top: 10px;
+.register-link {
   text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.register-link a {
+  color: #667eea;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
 }
 </style>
