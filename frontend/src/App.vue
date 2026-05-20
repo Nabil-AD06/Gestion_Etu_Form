@@ -1,7 +1,7 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <HelloWorld />
+  <Register />
 </template>
+
+<script setup>
+import Register from './components/Register.vue'
+</script>
