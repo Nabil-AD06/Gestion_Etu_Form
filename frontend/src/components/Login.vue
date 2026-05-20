@@ -58,7 +58,7 @@ const login = async () => {
     if (role === 'ADMIN') {
       router.push('/admin')
     } else {
-      router.push('/accueil')
+      router.push('/etudiant')
     }
 
   } catch (err) {
