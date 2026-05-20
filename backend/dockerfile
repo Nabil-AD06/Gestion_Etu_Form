@@ -1,15 +1,28 @@
-FROM node:22.12
+# ============================================
+# Dockerfile - Backend Node.js
+# ============================================
 
+# Étape 1 : Image de base légère
+FROM node:20-alpine
+
+# Métadonnées
+LABEL maintainer="ton-email@example.com"
+LABEL description="Backend API - Gestion Étudiants & Formations"
+
+# Définir le dossier de travail dans le conteneur
 WORKDIR /app
 
+# Copier package.json en premier (optimise le cache Docker)
 COPY package*.json ./
 
-RUN npm ci --omit=dev
+# Installer les dépendances
+RUN npm install --only=production
 
+# Copier tout le code source
 COPY . .
 
-RUN npx prisma generate
-
+# Exposer le port de l'API
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# Commande de démarrage
+CMD ["node", "src/app.js"]
